@@ -1,4 +1,4 @@
-# laminas-mvc-skeleton
+# laminas-mvc-skeleton  help
 
 > ## 🇷🇺 Русским гражданам
 >
