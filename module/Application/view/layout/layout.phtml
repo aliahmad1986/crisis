@@ -1,74 +1,1219 @@
-<?php
-/**
- * @var Laminas\View\Renderer\PhpRenderer $this
- */
-?>
-<?= $this->doctype() ?>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <?= $this->headTitle('Laminas MVC Skeleton')->setSeparator(' - ')->setAutoEscape(false) ?>
-
-        <?= $this->headMeta()
-            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
-            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
-        ?>
-
-        <!-- Styles -->
-        <?= $this->headLink([
-                'rel' => 'shortcut icon',
-                'type' => 'image/vnd.microsoft.icon',
-                'href' => $this->basePath() . '/img/favicon.ico'
-            ])
-            ->prependStylesheet($this->basePath('css/style.css'))
-            ->prependStylesheet($this->basePath('css/bootstrap.min.css')) ?>
-
-        <!-- Scripts -->
-        <?= $this->headScript() ?>
-    </head>
-    <body>
-        <nav class="navbar navbar-expand-md navbar-dark mb-4" role="navigation">
-            <div class="container">
-                <a class="navbar-brand" href="<?= $this->url('home') ?>">
-                    <img src="<?= $this->basePath('img/laminas-logo.svg') ?>" alt="Laminas">
-                    <span class="navbar-text text-light">MVC Skeleton</span>
-                </a>
-                <button
-                    class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation"
-                >
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a
-                                class="nav-link active"
-                                aria-current="page"
-                                href="<?= $this->url('home') ?>"
-                            >Home
-                            </a>
-                        </li>
-                    </ul>
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Professional Dashboard - <?= $this->escapeHtml($this->title ?? 'Management System') ?></title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Variables */
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --dark-color: #1f2937;
+            --light-color: #f9fafb;
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 80px;
+            --header-height: 70px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Glass Morphism Effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Professional Sidebar - RTL Position */
+        #sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            right: 0; /* RTL: Changed from left: 0 to right: 0 */
+            z-index: 1000;
+            transition: var(--transition);
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.3); /* RTL: Negative shadow */
+            border-left: 1px solid rgba(255, 255, 255, 0.1); /* RTL: Changed from border-right */
+            overflow-y: auto;
+        }
+        
+        #sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+        
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.9);
+        }
+        
+        .brand-logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-left: 15px; /* RTL: Changed from margin-right */
+        }
+        
+        .brand-text h4 {
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .menu-item {
+            margin: 5px 15px;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .menu-item a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: var(--transition);
+        }
+        
+        .menu-item a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(-5px); /* RTL: Changed from 5px to -5px */
+        }
+        
+        .menu-item.active a {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%);
+            color: white;
+            border-right: 3px solid var(--primary-color); /* RTL: Changed from border-left */
+        }
+        
+        .menu-item i {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .menu-badge {
+            background: var(--danger-color);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: auto; /* RTL: Changed from ms-auto */
+        }
+        
+        /* Main Content Area - RTL Position */
+        #main-content {
+            margin-right: var(--sidebar-width); /* RTL: Changed from margin-left */
+            min-height: 100vh;
+            transition: var(--transition);
+            background: linear-gradient(135deg, #f5f7fb 0%, #e4e8f0 100%);
+        }
+        
+        #sidebar.collapsed ~ #main-content {
+            margin-right: var(--sidebar-collapsed); /* RTL: Changed from margin-left */
+        }
+        
+        /* Professional Header */
+        .main-header {
+            height: var(--header-height);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            padding: 0 30px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+        }
+        
+        .page-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Dashboard Settings Button */
+        .dashboard-settings-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6366f1;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .dashboard-settings-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 300px;
+            padding: 12px 45px 12px 20px; /* RTL: Changed padding direction */
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .search-box input:focus {
+            width: 350px;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px; /* RTL: Changed from right */
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+        
+        /* Notification Button */
+        .notification-btn {
+            position: relative;
+            background: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .notification-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            left: -5px; /* RTL: Changed from right */
+            background: var(--danger-color);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* User Profile */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .user-profile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        /* Toggle Buttons - RTL Position */
+        .sidebar-toggle {
+            position: fixed;
+            bottom: 25px;
+            right: 25px; /* RTL: Changed from left */
+            z-index: 1001;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4);
+            transition: var(--transition);
+        }
+        
+        .sidebar-toggle:hover {
+            transform: translateY(-3px) rotate(90deg); /* RTL: Changed rotation direction */
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
+        }
+        
+        .mobile-menu-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px; /* RTL: Changed from left */
+            z-index: 1002;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 30px;
+        }
+        
+        /* Professional Stats Cards */
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .stat-icon::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            right: -5px; /* RTL: Changed from left */
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            opacity: 0.2;
+            z-index: -1;
+        }
+        
+        .stat-info h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--dark-color);
+        }
+        
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+        }
+        
+        .trend-up { color: var(--success-color); }
+        .trend-down { color: var(--danger-color); }
+        
+        /* Activity Timeline - RTL Position */
+        .activity-timeline {
+            position: relative;
+            padding-right: 30px; /* RTL: Changed from padding-left */
+        }
+        
+        .activity-timeline::before {
+            content: '';
+            position: absolute;
+            right: 0; /* RTL: Changed from left */
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+        }
+        
+        .activity-item {
+            position: relative;
+            padding-bottom: 25px;
+            padding-right: 30px; /* RTL: Changed from padding-left */
+        }
+        
+        .activity-item::before {
+            content: '';
+            position: absolute;
+            right: -6px; /* RTL: Changed from left */
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        
+        /* Settings Panel - RTL Position */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            left: -400px; /* RTL: Changed from right */
+            width: 380px;
+            height: 100vh;
+            background: white;
+            box-shadow: 5px 0 30px rgba(0, 0, 0, 0.1); /* RTL: Changed shadow direction */
+            z-index: 1200;
+            transition: var(--transition);
+            overflow-y: auto;
+            padding: 25px;
+        }
+        
+        .settings-panel.open {
+            left: 0; /* RTL: Changed from right */
+        }
+        
+        .settings-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1199;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+        
+        .settings-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .theme-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .theme-option {
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .theme-option:hover {
+            transform: translateY(-3px);
+        }
+        
+        .theme-option.active {
+            border-color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .theme-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+        }
+        
+        /* Quick Actions */
+        .quick-actions .btn {
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            height: 100%;
+            transition: var(--transition);
+            border: 2px solid #e5e7eb;
+        }
+        
+        .quick-actions .btn:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+        }
+        
+        /* Mobile Overlay */
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+        
+        .mobile-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Mobile Responsiveness - RTL Adjusted */
+        @media (max-width: 992px) {
+            #sidebar {
+                transform: translateX(100%); /* RTL: Changed from -100% */
+                width: 300px;
+            }
+            
+            #sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            #main-content {
+                margin-right: 0 !important; /* RTL: Changed from margin-left */
+                padding-top: var(--header-height);
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+                top: 15px;
+                right: 15px; /* RTL: Changed from left */
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            
+            /* Move dashboard settings button to header actions in mobile */
+            .page-title .dashboard-settings-btn {
+                display: none;
+            }
+            
+            /* Add dashboard settings to header actions in mobile */
+            .header-actions .dashboard-settings-btn {
+                display: flex;
+                width: 40px;
+                height: 40px;
+                margin-left: 10px; /* RTL: Changed from margin-right */
+            }
+            
+            .sidebar-toggle {
+                display: none;
+            }
+            
+            .search-box input {
+                width: 200px;
+            }
+            
+            .search-box input:focus {
+                width: 250px;
+            }
+            
+            .settings-panel {
+                width: 100%;
+                left: -100%; /* RTL: Changed from right */
+            }
+            
+            /* Adjust header for mobile */
+            .main-header {
+                padding: 0 15px;
+                position: fixed;
+                top: 0;
+                right: 0; /* RTL: Changed from left */
+                left: 0;
+                z-index: 998;
+            }
+            
+            /* Adjust header actions spacing */
+            .header-actions {
+                gap: 10px;
+            }
+            
+            /* Hide user profile text in mobile */
+            .user-profile > div:last-child {
+                display: none;
+            }
+            
+            .user-profile {
+                padding: 5px;
+            }
+            
+            /* Adjust search box for mobile */
+            .search-box {
+                position: static;
+            }
+            
+            .search-box input {
+                width: 150px;
+                padding: 8px 35px 8px 15px; /* RTL: Adjusted padding */
+            }
+            
+            .search-box input:focus {
+                width: 180px;
+            }
+            
+            .search-box i {
+                left: 10px; /* RTL: Changed from right */
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-content {
+                padding: 15px;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .header-actions {
+                gap: 8px;
+            }
+            
+            .search-box input {
+                width: 120px;
+            }
+            
+            .search-box input:focus {
+                width: 150px;
+            }
+            
+            .page-title h1 {
+                font-size: 1.4rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .mobile-menu-btn {
+                top: 12px;
+                right: 12px; /* RTL: Changed from left */
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+            
+            .header-actions .dashboard-settings-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+            
+            .notification-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+            
+            .search-box input {
+                width: 100px;
+                padding: 6px 30px 6px 12px; /* RTL: Adjusted padding */
+                font-size: 0.8rem;
+            }
+            
+            .search-box i {
+                left: 8px; /* RTL: Changed from right */
+                font-size: 0.8rem;
+            }
+            
+            .user-profile {
+                padding: 3px;
+            }
+            
+            .user-avatar {
+                width: 30px;
+                height: 30px;
+                font-size: 1rem;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* Toast Notification - RTL Position */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px; /* RTL: Changed from left */
+            background: var(--success-color);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            animation: slideInUp 0.3s ease-out;
+            max-width: 300px;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Button - RTL Position -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="bi bi-list"></i>
+    </button>
+    
+    <!-- Sidebar Toggle - RTL Position -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="bi bi-chevron-right" id="toggleIcon"></i> <!-- RTL: Changed icon -->
+    </button>
+    
+    <!-- Settings Panel -->
+    <div class="settings-overlay" id="settingsOverlay"></div>
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h4>Dashboard Settings</h4>
+            <button class="btn btn-close" id="settingsClose"></button>
+        </div>
+        
+        <div class="mb-4">
+            <h6 class="mb-3">Theme Selection</h6>
+            <div class="theme-options">
+                <div class="theme-option active" data-theme="light">
+                    <div class="theme-color" style="background: linear-gradient(135deg, #f8fafc, #ffffff)"></div>
+                    <div>Light</div>
+                </div>
+                <div class="theme-option" data-theme="dark">
+                    <div class="theme-color" style="background: linear-gradient(135deg, #1e293b, #0f172a)"></div>
+                    <div>Dark</div>
+                </div>
+                <div class="theme-option" data-theme="blue">
+                    <div class="theme-color" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8)"></div>
+                    <div>Blue</div>
+                </div>
+                <div class="theme-option" data-theme="purple">
+                    <div class="theme-color" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed)"></div>
+                    <div>Purple</div>
                 </div>
             </div>
-        </nav>
-        <div class="container">
-            <?= $this->content ?>
-            <hr>
-            <footer>
-                <p>
-                    &copy; <?= date('Y') ?>
-                    <a href="https://getlaminas.org/">Laminas Project</a> a Series of LF Projects, LLC.
-                </p>
-            </footer>
         </div>
-        <?= $this->inlineScript()
-            ->prependFile($this->basePath('js/bootstrap.min.js')) ?>
-    </body>
+        
+        <div class="mb-4">
+            <h6 class="mb-3">Navigation Settings</h6>
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="sidebarFixed" checked>
+                <label class="form-check-label" for="sidebarFixed">Fixed Sidebar</label>
+            </div>
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="sidebarMini">
+                <label class="form-check-label" for="sidebarMini">Collapsible Sidebar</label>
+            </div>
+        </div>
+        
+        <div class="mb-4">
+            <h6 class="mb-3">Header Settings</h6>
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="headerFixed" checked>
+                <label class="form-check-label" for="headerFixed">Fixed Header</label>
+            </div>
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="darkHeader">
+                <label class="form-check-label" for="darkHeader">Dark Header</label>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <button class="btn btn-primary w-100 mb-2" id="applySettings">
+                Apply Changes
+            </button>
+            <button class="btn btn-outline-secondary w-100" id="resetSettings">
+                Reset Settings
+            </button>
+        </div>
+    </div>
+    
+    <!-- Professional Sidebar - RTL Position -->
+    <nav id="sidebar">
+        
+        <div class="sidebar-menu">
+            <div class="menu-item active">
+                <a href="#">
+                    <i class="bi bi-speedometer2"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </div>
+            
+            <div class="menu-item">
+                <a href="#">
+                    <i class="bi bi-people"></i>
+                    <span class="menu-text">User Management</span>
+                    <span class="menu-badge">24</span>
+                </a>
+            </div>
+            
+            <div class="menu-item">
+                <a href="#">
+                    <i class="bi bi-box-seam"></i>
+                    <span class="menu-text">Products</span>
+                </a>
+            </div>
+            
+            <div class="menu-item">
+                <a href="#">
+                    <i class="bi bi-cart-check"></i>
+                    <span class="menu-text">Orders</span>
+                </a>
+            </div>
+            
+            <div class="menu-item">
+                <a href="#">
+                    <i class="bi bi-wallet2"></i>
+                    <span class="menu-text">Finance</span>
+                </a>
+            </div>
+            
+            <hr class="bg-secondary opacity-25 mx-3 my-4">
+            
+            <div class="menu-item">
+                <a href="#">
+                    <i class="bi bi-gear"></i>
+                    <span class="menu-text">Settings</span>
+                </a>
+            </div>
+            
+            <div class="menu-item">
+                <a href="#">
+                    <i class="bi bi-headset"></i>
+                    <span class="menu-text">Support</span>
+                </a>
+            </div>
+        </div>
+        
+   
+    </nav>
+    
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Professional Header -->
+        <header class="main-header">
+            <div class="header-content">
+                <div class="page-title d-flex align-items-center gap-3">
+                    <!-- Dashboard Settings Button (Visible in desktop) -->
+                    <button class="dashboard-settings-btn" id="dashboardSettingsBtnDesktop">
+                        <i class="bi bi-gear"></i>
+                    </button>
+                    <div>
+                        <h1>Management Dashboard</h1>
+                        <p class="text-muted mb-0">Welcome! Today is <?= date('Y/m/d') ?></p>
+                    </div>
+                </div>
+                
+                <div class="header-actions">
+                    <!-- Dashboard Settings Button (Visible in mobile) -->
+                    <button class="dashboard-settings-btn d-none" id="dashboardSettingsBtnMobile">
+                        <i class="bi bi-gear"></i>
+                    </button>
+                    
+                    <div class="search-box">
+                        <input type="text" placeholder="Search reports, users, products...">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    
+                    <div class="notification-btn">
+                        <i class="bi bi-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    
+                    <div class="user-profile">
+                        <div class="user-avatar">AD</div>
+                        <div class="d-none d-md-block">
+                            <h6 class="mb-0">System Admin</h6>
+                            <small class="text-muted">Online</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <?= $this->content ?>
+        </div>
+    </main>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Dashboard Professional v2.0 Initialized');
+            
+            // DOM Elements
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const toggleIcon = document.getElementById('toggleIcon');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileOverlay = document.createElement('div');
+            mobileOverlay.className = 'mobile-overlay';
+            document.body.appendChild(mobileOverlay);
+            
+            // Settings Panel Elements
+            const dashboardSettingsBtnDesktop = document.getElementById('dashboardSettingsBtnDesktop');
+            const dashboardSettingsBtnMobile = document.getElementById('dashboardSettingsBtnMobile');
+            const settingsPanel = document.getElementById('settingsPanel');
+            const settingsOverlay = document.getElementById('settingsOverlay');
+            const settingsClose = document.getElementById('settingsClose');
+            const applySettingsBtn = document.getElementById('applySettings');
+            const resetSettingsBtn = document.getElementById('resetSettings');
+            
+            // State
+            let sidebarExpanded = true;
+            let mobileMenuOpen = false;
+            
+            // Desktop Sidebar Toggle - RTL Adjusted
+            function toggleDesktopSidebar() {
+                sidebarExpanded = !sidebarExpanded;
+                
+                if (sidebarExpanded) {
+                    sidebar.classList.remove('collapsed');
+                    toggleIcon.classList.remove('bi-chevron-left');
+                    toggleIcon.classList.add('bi-chevron-right'); // RTL: Changed icon
+                } else {
+                    sidebar.classList.add('collapsed');
+                    toggleIcon.classList.remove('bi-chevron-right'); // RTL: Changed icon
+                    toggleIcon.classList.add('bi-chevron-left');
+                }
+                
+                localStorage.setItem('sidebarExpanded', sidebarExpanded);
+                showToast('Menu ' + (sidebarExpanded ? 'expanded' : 'collapsed'));
+            }
+            
+            // Mobile Menu Toggle
+            function toggleMobileMenu() {
+                mobileMenuOpen = !mobileMenuOpen;
+                
+                if (mobileMenuOpen) {
+                    sidebar.classList.add('mobile-open');
+                    mobileOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    
+                    mobileOverlay.addEventListener('click', function() {
+                        toggleMobileMenu();
+                    });
+                } else {
+                    sidebar.classList.remove('mobile-open');
+                    mobileOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+            
+            // Settings Panel Functions
+            function openSettingsPanel() {
+                settingsPanel.classList.add('open');
+                settingsOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeSettingsPanel() {
+                settingsPanel.classList.remove('open');
+                settingsOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            // Apply Settings
+            function applySettings() {
+                const theme = document.querySelector('.theme-option.active').dataset.theme;
+                const sidebarFixed = document.getElementById('sidebarFixed').checked;
+                const headerFixed = document.getElementById('headerFixed').checked;
+                
+                // Apply theme
+                document.body.setAttribute('data-theme', theme);
+                
+                // Save settings
+                const settings = {
+                    theme: theme,
+                    sidebarFixed: sidebarFixed,
+                    headerFixed: headerFixed,
+                    timestamp: new Date().toISOString()
+                };
+                
+                localStorage.setItem('dashboardSettings', JSON.stringify(settings));
+                
+                closeSettingsPanel();
+                showToast('Settings applied successfully');
+            }
+            
+            // Reset Settings
+            function resetSettings() {
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.classList.remove('active');
+                });
+                document.querySelector('[data-theme="light"]').classList.add('active');
+                
+                document.getElementById('sidebarFixed').checked = true;
+                document.getElementById('headerFixed').checked = true;
+                
+                localStorage.removeItem('dashboardSettings');
+                document.body.removeAttribute('data-theme');
+                
+                showToast('Settings reset to default');
+            }
+            
+            // Show Toast Notification
+            function showToast(message) {
+                const toast = document.createElement('div');
+                toast.className = 'toast-notification';
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+            
+            // Load Settings
+            function loadSettings() {
+                const savedSettings = localStorage.getItem('dashboardSettings');
+                if (savedSettings) {
+                    try {
+                        const settings = JSON.parse(savedSettings);
+                        
+                        // Load theme
+                        if (settings.theme) {
+                            document.querySelectorAll('.theme-option').forEach(option => {
+                                option.classList.remove('active');
+                                if (option.dataset.theme === settings.theme) {
+                                    option.classList.add('active');
+                                }
+                            });
+                            document.body.setAttribute('data-theme', settings.theme);
+                        }
+                        
+                        // Load other settings
+                        if (settings.sidebarFixed !== undefined) {
+                            document.getElementById('sidebarFixed').checked = settings.sidebarFixed;
+                        }
+                        if (settings.headerFixed !== undefined) {
+                            document.getElementById('headerFixed').checked = settings.headerFixed;
+                        }
+                    } catch (e) {
+                        console.error('Error loading settings:', e);
+                    }
+                }
+                
+                // Load sidebar state
+                const savedSidebarState = localStorage.getItem('sidebarExpanded');
+                if (savedSidebarState !== null) {
+                    sidebarExpanded = savedSidebarState === 'true';
+                    if (!sidebarExpanded) {
+                        sidebar.classList.add('collapsed');
+                        toggleIcon.classList.remove('bi-chevron-right'); // RTL: Changed icon
+                        toggleIcon.classList.add('bi-chevron-left');
+                    }
+                }
+            }
+            
+            // Handle mobile/desktop settings button visibility
+            function handleResponsiveLayout() {
+                if (window.innerWidth <= 992) {
+                    // Mobile view
+                    dashboardSettingsBtnMobile.classList.remove('d-none');
+                    dashboardSettingsBtnDesktop.style.display = 'none';
+                } else {
+                    // Desktop view
+                    dashboardSettingsBtnMobile.classList.add('d-none');
+                    dashboardSettingsBtnDesktop.style.display = 'flex';
+                }
+            }
+            
+            // Event Listeners
+            sidebarToggle.addEventListener('click', toggleDesktopSidebar);
+            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            dashboardSettingsBtnDesktop.addEventListener('click', openSettingsPanel);
+            dashboardSettingsBtnMobile.addEventListener('click', openSettingsPanel);
+            settingsClose.addEventListener('click', closeSettingsPanel);
+            settingsOverlay.addEventListener('click', closeSettingsPanel);
+            applySettingsBtn.addEventListener('click', applySettings);
+            resetSettingsBtn.addEventListener('click', resetSettings);
+            
+            // Theme selection
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.theme-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+            
+            // Menu item click handlers
+            document.querySelectorAll('.menu-item a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Update active state
+                    document.querySelectorAll('.menu-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    this.closest('.menu-item').classList.add('active');
+                    
+                    // Close mobile menu if open
+                    if (window.innerWidth <= 992 && mobileMenuOpen) {
+                        toggleMobileMenu();
+                    }
+                });
+            });
+            
+            // Handle Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (mobileMenuOpen) toggleMobileMenu();
+                    if (settingsPanel.classList.contains('open')) closeSettingsPanel();
+                }
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                handleResponsiveLayout();
+                
+                if (window.innerWidth > 992 && mobileMenuOpen) {
+                    toggleMobileMenu();
+                }
+            });
+            
+            // Initialize
+            loadSettings();
+            handleResponsiveLayout();
+        });
+    </script>
+    
+    <?= $this->inlineScript() ?>
+</body>
 </html>
